@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html style="width: 100%; height: 100%;">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta charset="utf-8" />
+    <title></title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="assets/formviewer.css">
+    <script src="assets/formviewer.js" type="text/javascript"></script>
+    <script src="assets/formvuapi.js" type="text/javascript"></script>
+    <script type="text/javascript">
+(function() {
+"use strict";
+
+/**
+ * Shorthand helper function to getElementById
+ * @param id
+ * @returns {Element}
+ */
+var d = function (id) {
+    return document.getElementById(id);
+};
+
+var ClassHelper = (function() {
+    return {
+        addClass: function(ele, name) {
+            var classes = ele.className.length !== 0 ? ele.className.split(" ") : [];
+            var index = classes.indexOf(name);
+            if (index === -1) {
+                classes.push(name);
+                ele.className = classes.join(" ");
+            }
+        },
+
+        removeClass: function(ele, name) {
+            var classes = ele.className.length !== 0 ? ele.className.split(" ") : [];
+            var index = classes.indexOf(name);
+            if (index !== -1) {
+                classes.splice(index, 1);
+            }
+            ele.className = classes.join(" ");
+        }
+    };
+})();
+
+var Button = {};
+
+FormViewer.on('ready', function(data) {
+    // Grab buttons
+    Button.zoomIn = d('btnZoomIn');
+    Button.zoomOut = d('btnZoomOut');
+
+    if (Button.zoomIn) {
+        Button.zoomIn.onclick = function(e) { FormViewer.zoomIn(); e.preventDefault(); };
+    }
+    if (Button.zoomOut) {
+        Button.zoomOut.onclick = function(e) { FormViewer.zoomOut(); e.preventDefault(); };
+    }
+
+    document.title = data.title ? data.title : data.fileName;
+    var pageLabels = data.pageLabels;
+    var btnPage = d('btnPage');
+    if (btnPage != null) {
+        btnPage.innerHTML = pageLabels.length ? pageLabels[data.page - 1] : data.page;
+        btnPage.title = data.page + " of " + data.pagecount;
+
+        FormViewer.on('pagechange', function(data) {
+            d('btnPage').innerHTML = pageLabels.length ? pageLabels[data.page - 1] : data.page;
+            d('btnPage').title = data.page + " of " + data.pagecount;
+        });
+    }
+
+    if (idrform.app) {
+        idrform.app.execFunc = idrform.app.execMenuItem;
+        idrform.app.execMenuItem = function (str) {
+            switch (str.toUpperCase()) {
+                case "FIRSTPAGE":
+                    idrform.app.activeDocs[0].pageNum = 0;
+                    FormViewer.goToPage(1);
+                    break;
+                case "LASTPAGE":
+                    idrform.app.activeDocs[0].pageNum = FormViewer.config.pagecount - 1;
+                    FormViewer.goToPage(FormViewer.config.pagecount);
+                    break;
+                case "NEXTPAGE":
+                    idrform.app.activeDocs[0].pageNum++;
+                    FormViewer.next();
+                    break;
+                case "PREVPAGE":
+                    idrform.app.activeDocs[0].pageNum--;
+                    FormViewer.prev();
+                    break;
+                default:
+                    idrform.app.execFunc(str);
+                    break;
+            }
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.target != null) {
+            switch (e.target.constructor) {
+                case HTMLInputElement:
+                case HTMLTextAreaElement:
+                case HTMLVideoElement:
+                case HTMLAudioElement:
+                case HTMLSelectElement:
+                    return;
+                default:
+                    break;
+            }
+        }
+        switch (e.keyCode) {
+            case 33: // Page Up
+                FormViewer.prev();
+                e.preventDefault();
+                break;
+            case 34: // Page Down
+                FormViewer.next();
+                e.preventDefault();
+                break;
+            case 37: // Left Arrow
+                data.isR2L ? FormViewer.next() : FormViewer.prev();
+                e.preventDefault();
+                break;
+            case 39: // Right Arrow
+                data.isR2L ? FormViewer.prev() : FormViewer.next();
+                e.preventDefault();
+                break;
+            case 36: // Home
+                FormViewer.goToPage(1);
+                e.preventDefault();
+                break;
+            case 35: // End
+                FormViewer.goToPage(data.pagecount);
+                e.preventDefault();
+                break;
+        }
+    });
+});
+
+window.addEventListener("beforeprint", function(event) {
+    FormViewer.setZoom(FormViewer.ZOOM_AUTO);
+});
+
+})();
+</script>
+<style type="text/css">
+.btn{border:0 none; height:30px; padding:0; width:30px; background-color:transparent; display:inline-block; margin:7px 5px 0; vertical-align:top; cursor:pointer; color:#fff;}
+.btn:hover{background-color:#0e1319; color:#eddbd9; border-radius:5px;}
+.page{box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);}
+#formviewer{bottom:0; left:0; right:0; position:absolute; top:40px; background:#191f2f none repeat scroll 0 0;}
+body{padding:0px; margin:0px; background-color:#191f2f;}
+#FDFXFA_Menu{text-align:center; width:100%; z-index:9999; color:white;background-color:#707784; position:fixed; font-size:32px; margin:0px; opacity:0.8; top:0px; min-width:300px; min-height: 40px;}
+#FDFXFA_Menu a{cursor:pointer; border-radius:5px; padding:5px; font-family: IDRSymbols; margin:5px 10px 5px 10px;}
+#FDFXFA_PageLabel{padding-left:5px;font-size:20px}
+#FDFXFA_PageCount{padding-right:5px;font-size:20px}
+#FDFXFA_Menu a:hover{background-color:#0e1319; color:#eddbd9;}
+#FDFXFA_PageLabel{min-width:20px;display:inline-block;}
+#FDFXFA_Processing{width:100%; height:100%; z-index:10000; position:fixed; background-color:black; opacity:0.8; color:white; top:0px;text-align: center; font-size:300px; font-family:IDRSymbols;}
+#FDFXFA_Processing span{top:50%;left:50%;margin:-50px 0 0 -50px}
+#FDFXFA_FormType,#FDFXFA_Form,#FDFXFA_PDFName,#FDFXFA_FormSubmitURL{display:none;}
+@font-face {font-family:'IDRSymbols'; src: url(data:application/x-font-woff;charset=utf-8;base64,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) format('woff'); font-weight:normal; font-style:normal;}
+@media print {
+#FDFXFA_Menu,#FDFXFA_Menu a,#FDFXFA_Menu label,#FDFXFA_Menu button{display:none}
+#formviewer{overflow: visible}
+div.page{box-shadow: none;}
+}
+</style>
+</head>
+<body style="margin: 0;" onload='idrform.init()'>
+<script type="text/javascript" src="js/formvuacroform.js"></script>
+<script type="text/javascript" src="js/EmbeddedScript.js"></script>
+<div id='FDFXFA_Processing'>&#xF010;</div>
+<div id='FDFXFA_FormType'>AcroForm</div>
+<div id='FDFXFA_PDFName'>JustificanteDefinitivo.pdf</div>
+<div id='FDFXFA_Menu'><a title='Submit Form' onclick="FormViewer.handleFormSubmission('', 'formdata')">&#xF018;</a><a title='Go To FirstPage' onclick="idrform.app.execMenuItem('FirstPage')">&#xF01C;</a><a title='Go To PrevPage' onclick="idrform.app.execMenuItem('PrevPage')">&#xF01D;</a><label id='FDFXFA_PageLabel'><span id="btnPage">1</span></label><label id='FDFXFA_PageCount'>/ <span>1</span></label><a title='Go To NextPage' onclick="idrform.app.execMenuItem('NextPage')">&#xF01E;</a><a title='Go To LastPage' onclick="idrform.app.execMenuItem('LastPage')">&#xF01F;</a><a title='Save As Editable PDF' onclick="idrform.app.execMenuItem('SaveAs')">&#xF01A;</a><button id="btnZoomOut" title="Zoom Out" class="btn"><i class="fa fa-minus fa-lg" aria-hidden="true"></i></button><button id="btnZoomIn" title="Zoom In" class="btn"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button></div>
+<div hidden id="formviewer">
+<div></div>
+<div id="overlay"></div>
+<form>
+<div id="contentContainer">
+<div id="page1" style="width: 935px; height: 1210px; margin-top:20px;" class="page">
+<div class="page-inner" style="width: 935px; height: 1210px;">
+
+<div id="p1" class="pageArea" style="overflow: hidden; position: relative; width: 935px; height: 1210px; margin-top:auto; margin-left:auto; margin-right:auto; background-color: white;">
+<script type=text/javascript>
+    function toggleAnnotation(id){
+       var annotation = document.getElementById(id).style;
+       annotation.visibility = annotation.visibility === 'hidden' ? 'visible' : 'hidden';
+    }
+    var lastDragged;
+    function Draggable(element){
+        this.element=element;
+        this.offsets={};
+        this.mousePos={};
+        this.isMoving=false;
+        this.newPos={};
+        this.html=document.getElementsByTagName("html").item(0);
+        this.isTouch='ontouchstart' in window;
+        var self=this;
+        this.element.onmousemove=null;
+        if(this.html.addEventListener){
+            if(this.isTouch){
+                this.element.addEventListener("touchstart", moveStart);
+                this.html.addEventListener("touchmove", movePopup);
+                this.html.addEventListener("touchend", releaseAnnot);
+                try{moveStart(event);}catch(ex){}
+            }else{
+                this.element.addEventListener("mousedown", moveStart);
+                this.html.addEventListener("mousemove", movePopup);
+                this.html.addEventListener("mouseup", releaseAnnot);
+            }
+        }else if(this.html.attachEvent){
+            this.html.attachEvent("onmousedown", moveStart);
+            this.html.attachEvent("onmousemove", movePopup);
+            this.html.attachEvent("onmouseup", releaseAnnot);
+        }
+
+        function moveStart(event){
+            event = event || window.event;
+            self.isMoving = true;
+            self.mousePos.x=event.clientX || event.touches[0].pageX;
+            self.mousePos.y=event.clientY || event.touches[0].pageY;
+            self.offsets.left=self.element.parentNode.offsetLeft;
+            self.offsets.top=self.element.parentNode.offsetTop;
+            self.newPos.left=self.offsets.left;
+            self.newPos.top=self.offsets.top;
+            self.element.parentNode.style.zIndex=5;
+            if(lastDragged)
+                lastDragged.style.zIndex=4;
+        }
+
+        function releaseAnnot(event){
+            self.isMoving=false;
+            lastDragged=self.element.parentNode;
+        }
+
+        function movePopup(event){
+            if(self.isMoving === false)
+                return;
+            (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+            event = event || window.event;            
+            self.newPos.left=(event.clientX || event.touches[0].pageX) - self.mousePos.x + self.offsets.left;
+            self.newPos.top =(event.clientY || event.touches[0].pageY) - self.mousePos.y + self.offsets.top;
+            self.element.parentNode.style.top = self.newPos.top+"px";
+            self.element.parentNode.style.left = self.newPos.left+"px";
+        }
+
+        element.onclick =function(event){
+            if(self.offsets.left === self.newPos.left && self.newPos.top === self.offsets.top){
+                toggleAnnotation(self.element.parentNode.id);
+                self.isMoving=false;
+            }
+        }
+    }
+</script>
+
+
+<!-- Begin shared CSS values -->
+<style class="shared-css" type="text/css" >
+.t {
+	transform-origin: bottom left;
+	z-index: 2;
+	position: absolute;
+	white-space: pre;
+	overflow: visible;
+	line-height: 1.5;
+}
+.text-container {
+	white-space: pre;
+}
+@supports (-webkit-touch-callout: none) {
+	.text-container {
+		white-space: normal;
+	}
+}
+</style>
+<!-- End shared CSS values -->
+
+
+<!-- Begin inline CSS -->
+<style type="text/css" >
+
+#t1_1{left:72px;bottom:918px;letter-spacing:0.07px;}
+#t2_1{left:68px;bottom:906px;letter-spacing:0.06px;}
+#t3_1{left:701px;bottom:607px;letter-spacing:0.12px;}
+#t4_1{left:123px;bottom:1108px;letter-spacing:0.14px;word-spacing:-0.06px;}
+#t5_1{left:123px;bottom:1100px;letter-spacing:-0.17px;word-spacing:-0.33px;}
+#t6_1{left:488px;bottom:1142px;letter-spacing:-0.16px;}
+#t7_1{left:746px;bottom:1147px;letter-spacing:-0.17px;word-spacing:0.59px;}
+#t8_1{left:593px;bottom:1116px;letter-spacing:-0.19px;word-spacing:0.36px;}
+#t9_1{left:487px;bottom:1077px;letter-spacing:-0.19px;}
+#ta_1{left:487px;bottom:1058px;letter-spacing:-0.18px;}
+#tb_1{left:488px;bottom:1040px;letter-spacing:-0.17px;word-spacing:0.14px;}
+#tc_1{left:488px;bottom:1010px;letter-spacing:-0.19px;word-spacing:0.05px;}
+#td_1{left:750px;bottom:1043px;letter-spacing:-0.17px;word-spacing:0.25px;}
+#te_1{left:751px;bottom:1014px;letter-spacing:-0.2px;}
+#tf_1{left:70px;bottom:854px;letter-spacing:0.13px;}
+#tg_1{left:82px;bottom:854px;letter-spacing:0.12px;word-spacing:-0.06px;}
+#th_1{left:70px;bottom:824px;letter-spacing:0.13px;word-spacing:-0.08px;}
+#ti_1{left:70px;bottom:796px;letter-spacing:0.12px;word-spacing:-0.05px;}
+#tj_1{left:77px;bottom:1030px;}
+#tk_1{left:88px;bottom:1030px;letter-spacing:-0.08px;word-spacing:0.07px;}
+#tl_1{left:229px;bottom:1010px;letter-spacing:-0.09px;}
+#tm_1{left:70px;bottom:605px;letter-spacing:0.15px;word-spacing:0.05px;}
+#tn_1{left:150px;bottom:1052px;letter-spacing:0.28px;}
+#to_1{left:5px;bottom:1178px;letter-spacing:0.13px;}
+#tp_1{left:813px;bottom:1183px;letter-spacing:0.12px;}
+#tq_1{left:69px;bottom:748px;letter-spacing:0.13px;}
+#tr_1{left:70px;bottom:689px;letter-spacing:0.14px;}
+#ts_1{left:446px;bottom:607px;letter-spacing:0.14px;}
+#tt_1{left:69px;bottom:661px;}
+#tu_1{left:69px;bottom:641px;}
+
+.s0{font-size:12px;font-family:Arial-Bold_4s;color:#000;}
+.s1{font-size:18px;font-family:AdobeArabic-Bold_4m;color:#000;}
+.s2{font-size:8px;font-family:Arial_4v;color:#000;-webkit-text-stroke:0.2px #000;text-stroke:0.2px #000;}
+.s3{font-size:11px;font-family:Arial-Bold_4s;color:#000;}
+.s4{font-size:20px;font-family:TimesNewRoman-Bold_4y;color:#000;}
+.s5{font-size:21px;font-family:AdobeArabic-Regular_4p;color:#000;}
+.s6{font-size:11px;font-family:Arial_4v;color:#000;}
+#form1_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 521px;	top: 54px;	width: 124px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form2_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 543px;	top: 96px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: center;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form3_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 527px;	top: 118px;	width: 228px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form4_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 567px;	top: 136px;	width: 174px;	height: 14px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form5_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 746px;	top: 61px;	width: 61px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form6_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 750px;	top: 165px;	width: 75px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form7_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 546px;	top: 154px;	width: 70px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form8_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 582px;	top: 184px;	width: 57px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form9_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 750px;	top: 193px;	width: 84px;	height: 14px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form10_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 281px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form11_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 67px;	top: 475px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form12_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 339px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form13_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 370px;	width: 228px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form14_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 397px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form15_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 445px;	top: 602px;	width: 110px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form16_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 697px;	top: 602px;	width: 87px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form17_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 78px;	top: 535px;	width: 465px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form18_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 70px;	top: 605px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+#form19_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 80px;	top: 555px;	width: 463px;	height: 11px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+.idr-hidden {
+	visibility:hidden;
+}
+
+</style>
+<!-- End inline CSS -->
+
+<!-- Begin embedded font definitions -->
+<style id="fonts1" type="text/css" >
+
+@font-face {
+	font-family: AdobeArabic-Bold_4m;
+	src: url("fonts/AdobeArabic-Bold_4m.woff") format("woff");
+}
+
+@font-face {
+	font-family: AdobeArabic-Regular_4p;
+	src: url("fonts/AdobeArabic-Regular_4p.woff") format("woff");
+}
+
+@font-face {
+	font-family: Arial-Bold_4s;
+	src: url("fonts/Arial-Bold_4s.woff") format("woff");
+}
+
+@font-face {
+	font-family: Arial_4v;
+	src: url("fonts/Arial_4v.woff") format("woff");
+}
+
+@font-face {
+	font-family: TimesNewRoman-Bold_4y;
+	src: url("fonts/TimesNewRoman-Bold_4y.woff") format("woff");
+}
+
+</style>
+<!-- End embedded font definitions -->
+
+<!-- Begin page background -->
+<div id="pg1Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); -webkit-user-select: none;"></div>
+<div id="pg1" style="-webkit-user-select: none;"><object width="935" height="1210" data="1/1.svg" type="image/svg+xml" id="pdf1" style="width:935px; height:1210px; -moz-transform:scale(1); z-index: 0;"></object></div>
+<!-- End page background -->
+
+
+<!-- Begin text definitions (Positioned/styled in CSS) -->
+<div class="text-container"><span id="t1_1" class="t s0">Fecha de solicitud de </span>
+<span id="t2_1" class="t s0">envio: </span>
+<span id="t3_1" class="t s0">Matrícula </span>
+<span id="t4_1" class="t s1">INSTITUTO MEXICANO DEL SEGURO SOCIAL </span>
+<span id="t5_1" class="t s2">SEGURIDAD Y SOLIDARIDAD SOCIAL </span>
+<span id="t6_1" class="t s3">NSS : </span>
+<span id="t7_1" class="t s3">A. MEDICO: </span>
+<span id="t8_1" class="t s3">NOMBRE DEL PACIENTE </span>
+<span id="t9_1" class="t s3">CURP: </span>
+<span id="ta_1" class="t s3">DELEGACION: </span>
+<span id="tb_1" class="t s3">UNIDAD : </span>
+<span id="tc_1" class="t s3">CONSULTORIO : </span>
+<span id="td_1" class="t s3">CVE. PTAL. </span>
+<span id="te_1" class="t s3">TURNO: </span>
+<span id="tf_1" class="t s0">Ti </span><span id="tg_1" class="t s0">po de Solicitud: </span>
+<span id="th_1" class="t s0">Ocasión de la Solicitud: </span>
+<span id="ti_1" class="t s0">Fecha de la cita: </span>
+<span id="tj_1" class="t s4">S</span><span id="tk_1" class="t s4">OLICITUD DE SERVICIOS DENTRO DE </span>
+<span id="tl_1" class="t s4">LA UMF </span>
+<span id="tm_1" class="t s0">Nombre y firma del médico </span>
+<span id="tn_1" class="t s3">DIRECCION DE PRESTACIONES MEDICAS </span>
+<span id="to_1" class="t s5">Servicio UMF </span>
+<span id="tp_1" class="t s5">Page 1 of 2 </span>
+<span id="tq_1" class="t s0">Servicio al que se envia : </span>
+<span id="tr_1" class="t s0">Motivo de envio: </span>
+<span id="ts_1" class="t s0">Cédula Profesional </span>
+<span id="tt_1" class="t s6">- </span>
+<span id="tu_1" class="t s6">- </span></div>
+<!-- End text definitions -->
+
+
+<!-- Begin Form Data -->
+<input id="form1_1" type="text" required="required" tabindex="1" maxlength="11" value="" data-objref="213 0 R" title="Numero del Seguro Social (Formato  0000-00-0000)" data-field-name="NSS"/>
+<input id="form2_1" type="text" required="required" tabindex="2" value="" data-objref="214 0 R" title="Nombre completo del paciente" data-field-name="Nombre"/>
+<input id="form3_1" type="text" required="required" tabindex="3" maxlength="18" value="" data-objref="215 0 R" title="Clave unica de Registro de la Poblacion" data-field-name="CURP"/>
+<select id="form4_1" required="required" tabindex="4" data-objref="216 0 R" title="Estado de la republica donde radica" data-field-name="Delegacion">
+	<option value="AGUASCALIENTES" >AGUASCALIENTES</option>
+	<option value="BAJA CALIFORNIA NORTE" selected="selected" >BAJA CALIFORNIA NORTE</option>
+	<option value="BAJA CALIFORNIA SUR" >BAJA CALIFORNIA SUR</option>
+	<option value="CAMPECHE" >CAMPECHE</option>
+	<option value="CHIAPAS" >CHIAPAS</option>
+	<option value="CHIHUAHUA" >CHIHUAHUA</option>
+	<option value="COAHUILA" >COAHUILA</option>
+	<option value="COLIMA" >COLIMA</option>
+	<option value="DURANGO" >DURANGO</option>
+	<option value="ESTADO DE MÉXICO" >ESTADO DE MÉXICO</option>
+	<option value="GUANAJUATO" >GUANAJUATO</option>
+	<option value="GUERRERO" >GUERRERO</option>
+	<option value="HIDALGO" >HIDALGO</option>
+	<option value="JALISCO" >JALISCO</option>
+	<option value="MICHOACÁN" >MICHOACÁN</option>
+	<option value="MORELOS" >MORELOS</option>
+	<option value="NAYARIT" >NAYARIT</option>
+	<option value="NUEVO LEÓN" >NUEVO LEÓN</option>
+	<option value="OAXACA" >OAXACA</option>
+	<option value="PUEBLA" >PUEBLA</option>
+	<option value="QUERÉTARO" >QUERÉTARO</option>
+	<option value="QUINTANA ROO" >QUINTANA ROO</option>
+	<option value="SAN LUIS POTOSÍ" >SAN LUIS POTOSÍ</option>
+	<option value="SINALOA" >SINALOA</option>
+	<option value="SONORA" >SONORA</option>
+	<option value="TABASCO" >TABASCO</option>
+	<option value="TAMAULIPAS" >TAMAULIPAS</option>
+	<option value="TLAXCALA" >TLAXCALA</option>
+	<option value="VERACRUZ" >VERACRUZ</option>
+	<option value="YUCATÁN" >YUCATÁN</option>
+	<option value="ZACATECAS" >ZACATECAS</option>
+</select>
+<input id="form5_1" type="text" required="required" tabindex="5" maxlength="8" value="1F1998OR" data-objref="219 0 R" title="A. medico (formato: 0x0000xx)" data-field-name="Amedico"/>
+<input id="form6_1" type="text" required="required" tabindex="6" maxlength="12" value="020128252110" data-objref="220 0 R" title="CVE. PTAL. (Formato = 000000000000)" data-field-name="CVEPTAL"/>
+<input id="form7_1" type="text" required="required" tabindex="7" maxlength="11" value="UMF NO. " data-objref="221 0 R" title="Numero de Unidad Medica Familiar o Clinica (Formato = UMF NO. 00)" data-field-name="UMF"/>
+<input id="form8_1" type="text" required="required" tabindex="8" maxlength="2" value="" data-objref="222 0 R" title="Numero de Consultorio donde tienen sus consultas normalmente" data-field-name="Consultorio"/>
+<select id="form9_1" required="required" tabindex="9" data-objref="223 0 R" title="Turno de atencion" data-field-name="Turno">
+	<option value="MATUTINO" selected="selected" >MATUTINO</option>
+	<option value="VESPERTINO" >VESPERTINO</option>
+</select>
+<input id="form10_1" type="text" required="required" tabindex="10" value="" data-objref="224 0 R" title="Fecha a justificar (Formato = Martes, 26 de Septiembre del 2023)" data-field-name="Fecha"/>
+<input id="form11_1" type="text" required="required" tabindex="11" value="Urgencias" data-objref="225 0 R" data-field-name="Servicio"/>
+<input id="form12_1" type="text" required="required" tabindex="12" value="Ordinaria" data-objref="228 0 R" title="Tipo de Solicitud" data-field-name="Tipo"/>
+<input id="form13_1" type="text" required="required" tabindex="13" value="Primera vez" data-objref="229 0 R" title="Ocacion de Solicitud" data-field-name="Ocacion"/>
+<input id="form14_1" type="text" tabindex="14" value="" data-objref="230 0 R" title="Fecha de la cita (por lo regular se deja en blanco)" data-field-name="Fecha1"/>
+<input id="form15_1" type="text" required="required" tabindex="15" maxlength="7" value="" data-objref="231 0 R" title="Cedula Profecional (Formato = 0000000)" data-field-name="Cedula Profecional"/>
+<input id="form16_1" type="text" required="required" tabindex="16" maxlength="8" value="" data-objref="232 0 R" title="Matricula (Formato = 00000000)" data-field-name="Matricula"/>
+<input id="form17_1" type="text" required="required" tabindex="17" value="" data-objref="233 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo1"/>
+<input id="form18_1" type="text" required="required" tabindex="18" value="" data-objref="234 0 R" title="Nombre del medico" data-field-name="nombre"/>
+<input id="form19_1" type="text" tabindex="19" value="" data-objref="235 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo2"/>
+
+
+<!-- End Form Data -->
+
+</div>
+
+</div>
+</div>
+</div>
+</form>
+</div>
+
+<script src="config.js" type="text/javascript"></script>
+<script type="text/javascript">FormViewer.setup();</script>
+
+
+
+</body>
+</html>

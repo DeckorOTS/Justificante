@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="actualizacion.js" type="text/javascript"></script>
+    <script type="text/javascript" src="assets/formviewer.js"></script>
+    <link rel="stylesheet" href="assets/formviewer.css">
+    <script type="text/javascript">
+(function() {
+"use strict";
+
+/**
+ * Shorthand helper function to getElementById
+ * @param id
+ * @returns {Element}
+ */
+var d = function (id) {
+    return document.getElementById(id);
+};
+
+var ClassHelper = (function() {
+    return {
+        addClass: function(ele, name) {
+            var classes = ele.className.length !== 0 ? ele.className.split(" ") : [];
+            var index = classes.indexOf(name);
+            if (index === -1) {
+                classes.push(name);
+                ele.className = classes.join(" ");
+            }
+        },
+
+        removeClass: function(ele, name) {
+            var classes = ele.className.length !== 0 ? ele.className.split(" ") : [];
+            var index = classes.indexOf(name);
+            if (index !== -1) {
+                classes.splice(index, 1);
+            }
+            ele.className = classes.join(" ");
+        }
+    };
+})();
+
+var Button = {};
+
+FormViewer.on('ready', function(data) {
+    // Grab buttons
+    Button.zoomIn = d('btnZoomIn');
+    Button.zoomOut = d('btnZoomOut');
+
+    if (Button.zoomIn) {
+        Button.zoomIn.onclick = function(e) { FormViewer.zoomIn(); e.preventDefault(); };
+    }
+    if (Button.zoomOut) {
+        Button.zoomOut.onclick = function(e) { FormViewer.zoomOut(); e.preventDefault(); };
+    }
+
+    document.title = data.title ? data.title : data.fileName;
+    var pageLabels = data.pageLabels;
+    var btnPage = d('btnPage');
+    if (btnPage != null) {
+        btnPage.innerHTML = pageLabels.length ? pageLabels[data.page - 1] : data.page;
+        btnPage.title = data.page + " of " + data.pagecount;
+
+        FormViewer.on('pagechange', function(data) {
+            d('btnPage').innerHTML = pageLabels.length ? pageLabels[data.page - 1] : data.page;
+            d('btnPage').title = data.page + " of " + data.pagecount;
+        });
+    }
+
+    if (idrform.app) {
+        idrform.app.execFunc = idrform.app.execMenuItem;
+        idrform.app.execMenuItem = function (str) {
+            switch (str.toUpperCase()) {
+                case "FIRSTPAGE":
+                    idrform.app.activeDocs[0].pageNum = 0;
+                    FormViewer.goToPage(1);
+                    break;
+                case "LASTPAGE":
+                    idrform.app.activeDocs[0].pageNum = FormViewer.config.pagecount - 1;
+                    FormViewer.goToPage(FormViewer.config.pagecount);
+                    break;
+                case "NEXTPAGE":
+                    idrform.app.activeDocs[0].pageNum++;
+                    FormViewer.next();
+                    break;
+                case "PREVPAGE":
+                    idrform.app.activeDocs[0].pageNum--;
+                    FormViewer.prev();
+                    break;
+                default:
+                    idrform.app.execFunc(str);
+                    break;
+            }
+        }
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.target != null) {
+            switch (e.target.constructor) {
+                case HTMLInputElement:
+                case HTMLTextAreaElement:
+                case HTMLVideoElement:
+                case HTMLAudioElement:
+                case HTMLSelectElement:
+                    return;
+                default:
+                    break;
+            }
+        }
+        switch (e.keyCode) {
+            case 33: // Page Up
+                FormViewer.prev();
+                e.preventDefault();
+                break;
+            case 34: // Page Down
+                FormViewer.next();
+                e.preventDefault();
+                break;
+            case 37: // Left Arrow
+                data.isR2L ? FormViewer.next() : FormViewer.prev();
+                e.preventDefault();
+                break;
+            case 39: // Right Arrow
+                data.isR2L ? FormViewer.prev() : FormViewer.next();
+                e.preventDefault();
+                break;
+            case 36: // Home
+                FormViewer.goToPage(1);
+                e.preventDefault();
+                break;
+            case 35: // End
+                FormViewer.goToPage(data.pagecount);
+                e.preventDefault();
+                break;
+        }
+    });
+});
+
+window.addEventListener("beforeprint", function(event) {
+    FormViewer.setZoom(FormViewer.ZOOM_AUTO);
+});
+
+})();
+</script>
+</head>
+<body>
+        <div class="completo">
+        <div class="informacion">
+            <form  id="miForm" class="miForm"  >  
+        <label for ="NSS" class="label1 "  >Numero del Seguro Social</label>
+        <input id="NSS" class="input1" type="text" required="required" tabindex="1" maxlength="11" value="" data-objref="213 0 R" title="Numero del Seguro Social (Formato  0000-00-0000)" data-field-name="NSS"/>
+        <label for ="Nombre" class="label1 "  >"Nombre Completo del Paciente"</label>
+        <input id="Nombre" class="input1" type="text" required="required" tabindex="2" value="" data-objref="214 0 R" title="Nombre completo del paciente" data-field-name="Nombre"/>
+        <label for ="CURP" class="label1 "  >"Clave Unica del Registro de Poblacion"</label>
+        <input id="CURP" class="input1" type="text" required="required" tabindex="3" maxlength="18" value="" data-objref="215 0 R" title="Clave unica de Registro de la Poblacion" data-field-name="CURP"/>
+        <label for ="Delegacion" class="label1 "  >Delegacion</label>
+        <select id="Delegacion" class="input1" required="required" tabindex="4" data-objref="216 0 R" title="Estado de la republica donde radica" data-field-name="Delegacion">
+            <option value="AGUASCALIENTES" >AGUASCALIENTES</option>
+            <option value="BAJA CALIFORNIA NORTE" selected="selected" >BAJA CALIFORNIA NORTE</option>
+            <option value="BAJA CALIFORNIA SUR" >BAJA CALIFORNIA SUR</option>
+            <option value="CAMPECHE" >CAMPECHE</option>
+            <option value="CHIAPAS" >CHIAPAS</option>
+            <option value="CHIHUAHUA" >CHIHUAHUA</option>
+            <option value="COAHUILA" >COAHUILA</option>
+            <option value="COLIMA" >COLIMA</option>
+            <option value="DURANGO" >DURANGO</option>
+            <option value="ESTADO DE MÉXICO" >ESTADO DE MÉXICO</option>
+            <option value="GUANAJUATO" >GUANAJUATO</option>
+            <option value="GUERRERO" >GUERRERO</option>
+            <option value="HIDALGO" >HIDALGO</option>
+            <option value="JALISCO" >JALISCO</option>
+            <option value="MICHOACÁN" >MICHOACÁN</option>
+            <option value="MORELOS" >MORELOS</option>
+            <option value="NAYARIT" >NAYARIT</option>
+            <option value="NUEVO LEÓN" >NUEVO LEÓN</option>
+            <option value="OAXACA" >OAXACA</option>
+            <option value="PUEBLA" >PUEBLA</option>
+            <option value="QUERÉTARO" >QUERÉTARO</option>
+            <option value="QUINTANA ROO" >QUINTANA ROO</option>
+            <option value="SAN LUIS POTOSÍ" >SAN LUIS POTOSÍ</option>
+            <option value="SINALOA" >SINALOA</option>
+            <option value="SONORA" >SONORA</option>
+            <option value="TABASCO" >TABASCO</option>
+            <option value="TAMAULIPAS" >TAMAULIPAS</option>
+            <option value="TLAXCALA" >TLAXCALA</option>
+            <option value="VERACRUZ" >VERACRUZ</option>
+            <option value="YUCATÁN" >YUCATÁN</option>
+            <option value="ZACATECAS" >ZACATECAS</option>
+        </select>
+        <label for ="Amedico" class="label1 "  >A. medico</label>
+        <input id="Amedico" class="input1" type="text" required="required" tabindex="5" maxlength="8" value="1F1998OR" data-objref="219 0 R" title="A. medico (formato: 0x0000xx)" data-field-name="Amedico"/>
+        <label for ="CVEPTAL" class="label1 "  >CVE. PTAL</label>
+        <input id="CVEPTAL" class="input1" type="text" required="required" tabindex="6" maxlength="12" value="020128252110" data-objref="220 0 R" title="CVE. PTAL. (Formato = 000000000000)" data-field-name="CVEPTAL"/>
+        <label for ="UMF" class="label1 "  >Numero de unidad medica </label>
+        <input id="UMF" class="input1" type="text" required="required" tabindex="7" maxlength="11" value="UMF NO. " data-objref="221 0 R" title="Numero de Unidad Medica Familiar o Clinica (Formato = UMF NO. 00)" data-field-name="UMF"/>
+        <label for ="Consultorio" class="label1 "  >Numero de Consultorio</label>
+        <input id="Consultorio" class="input1" type="text" required="required" tabindex="8" maxlength="2" value="" data-objref="222 0 R" title="Numero de Consultorio donde tienen sus consultas normalmente" data-field-name="Consultorio"/>
+        <label for ="Turno" class="label1 "  >Turno de Atencion</label>
+        <select id="Turno" class="input1" required="required" tabindex="9" data-objref="223 0 R" title="Turno de atencion" data-field-name="Turno">
+            <option value="MATUTINO" selected="selected" >MATUTINO</option>
+            <option value="VESPERTINO" >VESPERTINO</option>
+        </select>
+        <label for ="Fecha" class="label1 "  >Fecha a justificar</label>
+        <input id="Fecha" class="input1" type="text" required="required" tabindex="10" value="" data-objref="224 0 R" title="Fecha a justificar (Formato = Martes, 26 de Septiembre del 2023)" data-field-name="Fecha"/>
+        <label for ="Servicio" class="label1 "  >Servicio</label>
+        <input id="Servicio" class="input1" type="text" required="required" tabindex="11" value="Urgencias" data-objref="225 0 R" data-field-name="Servicio"/>
+        <label for ="Tipo" class="label1 "  >Tipo de solicitud</label>
+        <input id="Tipo" class="input1" type="text" required="required" tabindex="12" value="Ordinaria" data-objref="228 0 R" title="Tipo de Solicitud" data-field-name="Tipo"/>
+        <label for ="Ocacion" class="label1 "  >Ocacion de Solicitud</label>
+        <input id="Ocacion" class="input1" type="text" required="required" tabindex="13" value="Primera vez" data-objref="229 0 R" title="Ocacion de Solicitud" data-field-name="Ocacion"/>
+        <label for ="Fecha1" class="label1 "  >Fecha de la cita (por lo regular se deja en blanco)</label>
+        <input id="Fecha1" class="input1" type="text" tabindex="14" value="" data-objref="230 0 R" title="Fecha de la cita (por lo regular se deja en blanco)" data-field-name="Fecha1"/>
+        <label for ="Cedula" class="label1 "  >Cedula Profecional</label>
+        <input id="Cedula" class="input1" type="text" required="required" tabindex="15" maxlength="7" value="" data-objref="231 0 R" title="Cedula Profecional (Formato = 0000000)" data-field-name="Cedula Profecional"/>
+        <label for ="Matricula" class="label1 "  >Matricula</label>
+        <input id="Matricula" class="input1" type="text" required="required" tabindex="16" maxlength="8" value="" data-objref="232 0 R" title="Matricula (Formato = 00000000)" data-field-name="Matricula"/>
+        <label for ="Motivo1" class="label1 "  >Motivo por el cual acudiste (parte que llena el medico con terminologia medica)</label>
+        <input id="Motivo1" class="input1" type="text" required="required" tabindex="17" value="" data-objref="233 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo1"/>
+        <label for ="nombre" class="label1 "  >Nombre del Medico</label>
+        <input id="nombre" class="input1" type="text" required="required" tabindex="18" value="" data-objref="234 0 R" title="Nombre del medico" data-field-name="nombre"/>
+        <label for ="Motivo2" class="label1 "  >Motivo 2 por el cual acudiste (parte que llena el medico con terminologia medica)</label>
+        <input id="Motivo2" class="input1" type="text" tabindex="19" value="" data-objref="235 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo2"/>
+        <button type="submit" class="input1" id="subbtn" name="subbtn">Imprimir</button>
+                </form> 
+    
+            </div>
+        <div class="pdfPreview">
+            <div id="formviewer">
+                <div></div>
+                <div id="overlay"></div>
+            
+                <form>
+                <div id="contentContainer">
+                <div id="page1" style="width: 935px; height: 1210px; margin-top:10px;" class="page">
+                <div class="page-inner" style="width: 935px; height: 1210px;">
+                
+                <div id="p1" class="pageArea" style="overflow: hidden; position: relative; width: 935px; height: 1210px; background-color: white;">
+                <script type=text/javascript>
+                    function toggleAnnotation(id){
+                       var annotation = document.getElementById(id).style;
+                       annotation.visibility = annotation.visibility === 'hidden' ? 'visible' : 'hidden';
+                    }
+                    var lastDragged;
+                    function Draggable(element){
+                        this.element=element;
+                        this.offsets={};
+                        this.mousePos={};
+                        this.isMoving=false;
+                        this.newPos={};
+                        this.html=document.getElementsByTagName("html").item(0);
+                        this.isTouch='ontouchstart' in window;
+                        var self=this;
+                        this.element.onmousemove=null;
+                        if(this.html.addEventListener){
+                            if(this.isTouch){
+                                this.element.addEventListener("touchstart", moveStart);
+                                this.html.addEventListener("touchmove", movePopup);
+                                this.html.addEventListener("touchend", releaseAnnot);
+                                try{moveStart(event);}catch(ex){}
+                            }else{
+                                this.element.addEventListener("mousedown", moveStart);
+                                this.html.addEventListener("mousemove", movePopup);
+                                this.html.addEventListener("mouseup", releaseAnnot);
+                            }
+                        }else if(this.html.attachEvent){
+                            this.html.attachEvent("onmousedown", moveStart);
+                            this.html.attachEvent("onmousemove", movePopup);
+                            this.html.attachEvent("onmouseup", releaseAnnot);
+                        }
+                
+                        function moveStart(event){
+                            event = event || window.event;
+                            self.isMoving = true;
+                            self.mousePos.x=event.clientX || event.touches[0].pageX;
+                            self.mousePos.y=event.clientY || event.touches[0].pageY;
+                            self.offsets.left=self.element.parentNode.offsetLeft;
+                            self.offsets.top=self.element.parentNode.offsetTop;
+                            self.newPos.left=self.offsets.left;
+                            self.newPos.top=self.offsets.top;
+                            self.element.parentNode.style.zIndex=5;
+                            if(lastDragged)
+                                lastDragged.style.zIndex=4;
+                        }
+                
+                        function releaseAnnot(event){
+                            self.isMoving=false;
+                            lastDragged=self.element.parentNode;
+                        }
+                
+                        function movePopup(event){
+                            if(self.isMoving === false)
+                                return;
+                            (event.preventDefault) ? event.preventDefault() : event.returnValue = false;
+                            event = event || window.event;            
+                            self.newPos.left=(event.clientX || event.touches[0].pageX) - self.mousePos.x + self.offsets.left;
+                            self.newPos.top =(event.clientY || event.touches[0].pageY) - self.mousePos.y + self.offsets.top;
+                            self.element.parentNode.style.top = self.newPos.top+"px";
+                            self.element.parentNode.style.left = self.newPos.left+"px";
+                        }
+                
+                        element.onclick =function(event){
+                            if(self.offsets.left === self.newPos.left && self.newPos.top === self.offsets.top){
+                                toggleAnnotation(self.element.parentNode.id);
+                                self.isMoving=false;
+                            }
+                        }
+                    }
+                </script>
+                
+                
+                <!-- Begin shared CSS values -->
+                <style class="shared-css" type="text/css" >
+                .t {
+                    transform-origin: bottom left;
+                    z-index: 2;
+                    position: absolute;
+                    white-space: pre;
+                    overflow: visible;
+                    line-height: 1.5;
+                }
+                .text-container {
+                    white-space: pre;
+                }
+                @supports (-webkit-touch-callout: none) {
+                    .text-container {
+                        white-space: normal;
+                    }
+                }
+                </style>
+                <!-- End shared CSS values -->
+                
+                
+                <!-- Begin inline CSS -->
+                <style type="text/css" >
+                
+                #t1_1{left:72px;bottom:918px;letter-spacing:0.07px;}
+                #t2_1{left:68px;bottom:906px;letter-spacing:0.06px;}
+                #t3_1{left:701px;bottom:607px;letter-spacing:0.12px;}
+                #t4_1{left:123px;bottom:1108px;letter-spacing:0.14px;word-spacing:-0.06px;}
+                #t5_1{left:123px;bottom:1100px;letter-spacing:-0.17px;word-spacing:-0.33px;}
+                #t6_1{left:488px;bottom:1142px;letter-spacing:-0.16px;}
+                #t7_1{left:746px;bottom:1147px;letter-spacing:-0.17px;word-spacing:0.59px;}
+                #t8_1{left:593px;bottom:1116px;letter-spacing:-0.19px;word-spacing:0.36px;}
+                #t9_1{left:487px;bottom:1077px;letter-spacing:-0.19px;}
+                #ta_1{left:487px;bottom:1058px;letter-spacing:-0.18px;}
+                #tb_1{left:488px;bottom:1040px;letter-spacing:-0.17px;word-spacing:0.14px;}
+                #tc_1{left:488px;bottom:1010px;letter-spacing:-0.19px;word-spacing:0.05px;}
+                #td_1{left:750px;bottom:1043px;letter-spacing:-0.17px;word-spacing:0.25px;}
+                #te_1{left:751px;bottom:1014px;letter-spacing:-0.2px;}
+                #tf_1{left:70px;bottom:854px;letter-spacing:0.13px;}
+                #tg_1{left:82px;bottom:854px;letter-spacing:0.12px;word-spacing:-0.06px;}
+                #th_1{left:70px;bottom:824px;letter-spacing:0.13px;word-spacing:-0.08px;}
+                #ti_1{left:70px;bottom:796px;letter-spacing:0.12px;word-spacing:-0.05px;}
+                #tj_1{left:77px;bottom:1030px;}
+                #tk_1{left:88px;bottom:1030px;letter-spacing:-0.08px;word-spacing:0.07px;}
+                #tl_1{left:229px;bottom:1010px;letter-spacing:-0.09px;}
+                #tm_1{left:70px;bottom:605px;letter-spacing:0.15px;word-spacing:0.05px;}
+                #tn_1{left:150px;bottom:1052px;letter-spacing:0.28px;}
+                #to_1{left:5px;bottom:1178px;letter-spacing:0.13px;}
+                #tp_1{left:813px;bottom:1183px;letter-spacing:0.12px;}
+                #tq_1{left:69px;bottom:748px;letter-spacing:0.13px;}
+                #tr_1{left:70px;bottom:689px;letter-spacing:0.14px;}
+                #ts_1{left:446px;bottom:607px;letter-spacing:0.14px;}
+                #tt_1{left:69px;bottom:661px;}
+                #tu_1{left:69px;bottom:641px;}
+                
+                .s0{font-size:12px;font-family:Arial-Bold_4s;color:#000;}
+                .s1{font-size:18px;font-family:AdobeArabic-Bold_4m;color:#000;}
+                .s2{font-size:8px;font-family:Arial_4v;color:#000;-webkit-text-stroke:0.2px #000;text-stroke:0.2px #000;}
+                .s3{font-size:11px;font-family:Arial-Bold_4s;color:#000;}
+                .s4{font-size:20px;font-family:TimesNewRoman-Bold_4y;color:#000;}
+                .s5{font-size:21px;font-family:AdobeArabic-Regular_4p;color:#000;}
+                .s6{font-size:11px;font-family:Arial_4v;color:#000;}
+                #form1_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 521px;	top: 54px;	width: 124px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form2_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 543px;	top: 96px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: center;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form3_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 527px;	top: 118px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form4_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 567px;	top: 136px;	width: 174px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form5_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 746px;	top: 61px;	width: 61px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form6_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 750px;	top: 165px;	width: 75px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form7_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 546px;	top: 154px;	width: 70px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form8_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 582px;	top: 184px;	width: 57px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form9_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 750px;	top: 193px;	width: 84px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form10_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 281px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form11_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 67px;	top: 475px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form12_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 339px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form13_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 370px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form14_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 257px;	top: 397px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form15_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 445px;	top: 602px;	width: 110px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form16_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 697px;	top: 602px;	width: 87px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form17_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 78px;	top: 535px;	width: 465px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form18_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 70px;	top: 605px;	width: 228px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                #form19_1{	z-index: 2;	padding: 0px;	position: absolute;	left: 78px;	top: 555px;	width: 463px;	height: 12px;	color: rgb(0,0,0);	text-align: left;	background: transparent;	border: none;	font: normal 10px Arial, Helvetica, sans-serif;}
+                .idr-hidden {
+                    visibility:hidden;
+                }
+                
+                </style>
+                <!-- End inline CSS -->
+                
+                <!-- Begin embedded font definitions -->
+                <style id="fonts1" type="text/css" >
+                
+                @font-face {
+                    font-family: AdobeArabic-Bold_4m;
+                    src: url("fonts/AdobeArabic-Bold_4m.woff") format("woff");
+                }
+                
+                @font-face {
+                    font-family: AdobeArabic-Regular_4p;
+                    src: url("fonts/AdobeArabic-Regular_4p.woff") format("woff");
+                }
+                
+                @font-face {
+                    font-family: Arial-Bold_4s;
+                    src: url("fonts/Arial-Bold_4s.woff") format("woff");
+                }
+                
+                @font-face {
+                    font-family: Arial_4v;
+                    src: url("fonts/Arial_4v.woff") format("woff");
+                }
+                
+                @font-face {
+                    font-family: TimesNewRoman-Bold_4y;
+                    src: url("fonts/TimesNewRoman-Bold_4y.woff") format("woff");
+                }
+                
+                </style>
+                <!-- End embedded font definitions -->
+                
+                <!-- Begin page background -->
+                <div id="pg1Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); -webkit-user-select: none;"></div>
+                <div id="pg1" style="-webkit-user-select: none;"><object width="935" height="1210" data="1/1.svg" type="image/svg+xml" id="pdf1" style="width:935px; height:1210px; -moz-transform:scale(1); z-index: 0;"></object></div>
+                <!-- End page background -->
+                
+                
+                <!-- Begin text definitions (Positioned/styled in CSS) -->
+                <div class="text-container"><span id="t1_1" class="t s0">Fecha de solicitud de </span>
+                <span id="t2_1" class="t s0">envio: </span>
+                <span id="t3_1" class="t s0">Matrícula </span>
+                <span id="t4_1" class="t s1">INSTITUTO MEXICANO DEL SEGURO SOCIAL </span>
+                <span id="t5_1" class="t s2">SEGURIDAD Y SOLIDARIDAD SOCIAL </span>
+                <span id="t6_1" class="t s3">NSS : </span>
+                <span id="t7_1" class="t s3">A. MEDICO: </span>
+                <span id="t8_1" class="t s3">NOMBRE DEL PACIENTE </span>
+                <span id="t9_1" class="t s3">CURP: </span>
+                <span id="ta_1" class="t s3">DELEGACION: </span>
+                <span id="tb_1" class="t s3">UNIDAD : </span>
+                <span id="tc_1" class="t s3">CONSULTORIO : </span>
+                <span id="td_1" class="t s3">CVE. PTAL. </span>
+                <span id="te_1" class="t s3">TURNO: </span>
+                <span id="tf_1" class="t s0">Ti </span><span id="tg_1" class="t s0">po de Solicitud: </span>
+                <span id="th_1" class="t s0">Ocasión de la Solicitud: </span>
+                <span id="ti_1" class="t s0">Fecha de la cita: </span>
+                <span id="tj_1" class="t s4">S</span><span id="tk_1" class="t s4">OLICITUD DE SERVICIOS DENTRO DE </span>
+                <span id="tl_1" class="t s4">LA UMF </span>
+                <span id="tm_1" class="t s0">Nombre y firma del médico </span>
+                <span id="tn_1" class="t s3">DIRECCION DE PRESTACIONES MEDICAS </span>
+                <span id="to_1" class="t s5">Servicio UMF </span>
+                <span id="tp_1" class="t s5">Page 1 of 2 </span>
+                <span id="tq_1" class="t s0">Servicio al que se envia : </span>
+                <span id="tr_1" class="t s0">Motivo de envio: </span>
+                <span id="ts_1" class="t s0">Cédula Profesional </span>
+                <span id="tt_1" class="t s6">- </span>
+                <span id="tu_1" class="t s6">- </span></div>
+                <!-- End text definitions -->
+                
+                
+                <!-- Begin Form Data -->
+                <input disabled class="t s3" id="form1_1" type="text" required="required" tabindex="1" maxlength="11" value="" data-objref="213 0 R" title="Numero del Seguro Social (Formato  0000-00-0000)" data-field-name="NSS"/>
+                <input disabled class="t s3" id="form2_1" type="text" required="required" tabindex="2" value="" data-objref="214 0 R" title="Nombre completo del paciente" data-field-name="Nombre"/>
+                <input disabled class="t s3" id="form3_1" type="text" required="required" tabindex="3" maxlength="18" value="" data-objref="215 0 R" title="Clave unica de Registro de la Poblacion" data-field-name="CURP"/>
+                <input disabled class="t s3" id="form4_1" required="required" tabindex="4" data-objref="216 0 R" title="Estado de la republica donde radica" data-field-name="Delegacion"/>
+                <input disabled class="t s3" id="form5_1" type="text" required="required" tabindex="5" maxlength="8" value="1F1998OR" data-objref="219 0 R" title="A. medico (formato: 0x0000xx)" data-field-name="Amedico"/>
+                <input disabled class="t s3" id="form6_1" type="text" required="required" tabindex="6" maxlength="12" value="020128252110" data-objref="220 0 R" title="CVE. PTAL. (Formato = 000000000000)" data-field-name="CVEPTAL"/>
+                <input disabled class="t s3" id="form7_1" type="text" required="required" tabindex="7" maxlength="11" value="UMF NO. " data-objref="221 0 R" title="Numero de Unidad Medica Familiar o Clinica (Formato = UMF NO. 00)" data-field-name="UMF"/>
+                <input disabled class="t s3" id="form8_1" type="text" required="required" tabindex="8" maxlength="2" value="" data-objref="222 0 R" title="Numero de Consultorio donde tienen sus consultas normalmente" data-field-name="Consultorio"/>
+                <input disabled class="t s3" id="form9_1" required="required" tabindex="9" data-objref="223 0 R" title="Turno de atencion" data-field-name="Turno"/>
+                <input disabled id="form10_1" type="text" required="required" tabindex="10" value="" data-objref="224 0 R" title="Fecha a justificar (Formato = Martes, 26 de Septiembre del 2023)" data-field-name="Fecha"/>
+                <input disabled id="form11_1" type="text" required="required" tabindex="11" value="Urgencias" data-objref="225 0 R" data-field-name="Servicio"/>
+                <input disabled id="form12_1" type="text" required="required" tabindex="12" value="Ordinaria" data-objref="228 0 R" title="Tipo de Solicitud" data-field-name="Tipo"/>
+                <input disabled id="form13_1" type="text" required="required" tabindex="13" value="Primera vez" data-objref="229 0 R" title="Ocacion de Solicitud" data-field-name="Ocacion"/>
+                <input disabled id="form14_1" type="text" tabindex="14" value="" data-objref="230 0 R" title="Fecha de la cita (por lo regular se deja en blanco)" data-field-name="Fecha1"/>
+                <input disabled id="form15_1" type="text" required="required" tabindex="15" maxlength="7" value="" data-objref="231 0 R" title="Cedula Profecional (Formato = 0000000)" data-field-name="Cedula Profecional"/>
+                <input disabled id="form16_1" type="text" required="required" tabindex="16" maxlength="8" value="" data-objref="232 0 R" title="Matricula (Formato = 00000000)" data-field-name="Matricula"/>
+                <input disabled id="form17_1" type="text" required="required" tabindex="17" value="" data-objref="233 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo1"/>
+                <input disabled id="form18_1" type="text" required="required" tabindex="18" value="" data-objref="234 0 R" title="Nombre del medico" data-field-name="nombre"/>
+                <input disabled id="form19_1" type="text" tabindex="19" value="" data-objref="235 0 R" title="Motivo por el cual acudiste (parte que llena el medico con terminologia medica)" data-field-name="Motivo2"/>
+                
+                
+                <!-- End Form Data -->
+                
+                </div>
+                
+                </div>
+                </div>
+                </div>
+                </form>
+
+            
+
+                </div>
+
+        </div>
+
+            
+                
+            <script type="text/javascript">FormViewer.setup();</script>
+        
+            </div>    
+</body>
+</html>

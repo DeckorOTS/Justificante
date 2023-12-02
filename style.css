@@ -1,0 +1,218 @@
+.miForm {
+    position: inherit;
+    display: auto;
+    width: 100%;
+    min-width: 400px;
+    max-width: 400px;
+    height: 100%;
+    padding: 10px;
+    overflow: hidden;
+    background-color: rgb(36, 36, 36, 0.85) ;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .9);
+    
+       
+}    
+/* .input1 {
+    width: 100%;
+    padding: 5px ;
+    margin: 5px 0PX 15px 0px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    justify-content: left;
+    font-family: Arial, Helvetica, sans-serif; 
+    font-size: 16px;
+    font-weight: bold;
+} */
+.label1 {
+    width: 100%;
+    padding: 5px ;
+    margin: 5px 0PX 0px 0px;
+    display: inline-block;
+    justify-content: left;
+    font-family: Arial, Helvetica, sans-serif; 
+    font-size: 16px;
+    font-weight: 900;
+}
+
+button {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    justify-content: left;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+.informacion {
+    position: relative;
+    display:flex;
+    flex-wrap: wrap;
+    width: 40%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-width: 400px;
+    min-width: 400px;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .6);
+}
+.pdfPreview {
+    position: relative;
+    background: url(IMSSS.jpg);
+    display: flex;
+    flex-wrap: wrap;
+    width: 80%;
+    min-width: 600px;
+    height: 100%;
+    overflow-x: hidden;
+    justify-content: center;
+    
+}
+body {
+    position: relative;
+    left: 0 ;
+    top: 0 ;
+    width: device-width;
+    height: 100vh ;
+    box-sizing: border-box;
+    margin: none;
+    padding: none;
+    overflow: hidden;
+    display: contents;
+
+}
+
+.completo {
+    height: 97vh ;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .6);
+    overflow: hidden;
+    
+ 
+}
+.fondo {
+    position: absolute;
+    right: 0;
+    max-width: auto-fill;
+    min-width: 60%;
+    padding: 5px;
+    background-color: rgb(67, 67, 67);
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: blue solid;
+}
+.informacion::-webkit-scrollbar {
+    width: 5px !important;
+}
+.informacion::-webkit-scrollbar-thumb {
+    background-color: #fff !important;
+}    
+.informacion::-webkit-scrollbar-track {
+    background: #ccc !important;
+}
+.pdfPreview::-webkit-scrollbar {
+    width: 5px !important;
+}
+.pdfPreview::-webkit-scrollbar-thumb {
+    background-color: #fff !important;
+}    
+.pdfPreview::-webkit-scrollbar-track {
+    background: #ccc !important;
+}
+    .input1 {
+        /* Font & Text */
+
+        font-size: 14px;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: 400;
+        letter-spacing: normal;
+        line-height: 20px;
+        text-decoration: none solid rgb(236, 236, 241);
+        text-align: left;
+        text-indent: 0px;
+        text-transform: none;
+        vertical-align: baseline;
+        white-space: normal;
+        word-spacing: 0px;
+    
+        /* Color & Background */
+        background-attachment: scroll;
+        background-color: rgba(0, 0, 0, 0);
+        background-image: none;
+        background-position: 0% 0%;
+        background-repeat: repeat;
+        color: rgb(236, 236, 241);
+    
+        /* Box */
+        height: 36px;
+        width: 100%;
+        border: 0px solid rgb(217, 217, 227);
+        border-top: 0px solid rgb(217, 217, 227);
+        border-right: 0px solid rgb(217, 217, 227);
+        border-bottom: 0px solid rgb(217, 217, 227);
+        border-left: 0px solid rgb(217, 217, 227);
+        margin: 0px;
+        padding: 0px;
+        max-height: none;
+        min-height: 0px;
+        max-width: none;
+        min-width: 0px;
+        box-shadow: 0px 0px 10px 10px rgba(255, 255, 255, .6);
+    
+        /* Positioning */
+        position: relative;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+        left: 0px;
+        float: none;
+        display: block;
+        clear: none;
+        z-index: auto;
+    
+        /* List */
+        list-style-image: none;
+        list-style-type: none;
+        list-style-position: outside;
+    
+        /* Table */
+        border-collapse: separate;
+        border-spacing: 0px 0px;
+        caption-side: top;
+        empty-cells: show;
+        table-layout: auto;
+    
+        /* Miscellaneous */
+        overflow: visible;
+        cursor: auto;
+        visibility: visible;
+    
+        /* Effects */
+        transform: none;
+        transition: all 0s ease 0s;
+        outline-offset: 0px;
+        box-sizing: border-box;
+        resize: none;
+        text-shadow: none;
+        text-overflow: clip;
+        word-wrap: normal;
+        box-shadow: none;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+
