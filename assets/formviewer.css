@@ -5,19 +5,27 @@
     display:block;
     overflow: hidden;
     background-color: white;
+    /* margin-top: 5px;
+    margin-bottom: 5px; */
+    /* box-shadow: 0px 0px 10px 03px rgba(0, 0, 0, 0.5);     */
 }
 
 .page-inner {
     -webkit-transform-origin: top left;
     -ms-transform-origin: top left;
     transform-origin: top left;
+    /* margin-top: 5px;
+    margin-bottom: 5px;     */
+    /* box-shadow: 0px 0px 10px 03px rgba(0, 0, 0, 0.5);         */
 }
 
 #formviewer {
     overflow: auto;
-    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 0;
     -webkit-overflow-scrolling: touch;
+    box-shadow: 0px 0px 10px 05px rgba(0, 0, 0, 0.9);        
 }
 
 #overlay {
@@ -26,6 +34,7 @@
     position: absolute;
     z-index: 10;
     visibility: hidden;
+    /* box-shadow: 0px 0px 10px 03px rgba(0, 0, 0, 0.5);         */
 }
 
 #overlay.panning {
@@ -34,6 +43,7 @@
     cursor: -moz-grab;
     cursor: -webkit-grab;
     cursor: grab;
+    /* box-shadow: 0px 0px 10px 03px rgba(0, 0, 0, 0.5);      */
 }
 
 #overlay.panning.mousedown {
@@ -45,7 +55,7 @@
 
 /* Continuous Layout */
 .layout-continuous .page {
-    margin: 0 auto 10px;
+    margin: 0 auto 0px;
 }
 .layout-continuous .page:last-child {
     margin: 0 auto 0;

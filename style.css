@@ -1,18 +1,21 @@
+html {
+    background-color: black;
+}
 .miForm {
     position: inherit;
     display: auto;
     width: 100%;
     min-width: 400px;
-    max-width: 400px;
+    max-width: 500px;
     height: 100%;
     padding: 10px;
-    overflow: hidden;
+    overflow-x: hidden;
     background-color: rgb(36, 36, 36, 0.85) ;
     box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .9);
     
        
 }    
-/* .input1 {
+.input1 {
     width: 100%;
     padding: 5px ;
     margin: 5px 0PX 15px 0px;
@@ -24,7 +27,10 @@
     font-family: Arial, Helvetica, sans-serif; 
     font-size: 16px;
     font-weight: bold;
-} */
+    color: #ccc;
+    background-color: rgb(36, 36, 36);
+    box-shadow: 0px 0px 10px 03px rgba(255, 255, 255, 0.5);    
+}
 .label1 {
     width: 100%;
     padding: 5px ;
@@ -34,6 +40,8 @@
     font-family: Arial, Helvetica, sans-serif; 
     font-size: 16px;
     font-weight: 900;
+    color: #ccc;
+ 
 }
 
 button {
@@ -55,11 +63,10 @@ button {
     flex-wrap: wrap;
     width: 40%;
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    max-width: 400px;
+    overflow: hidden;
+    max-width: 500px;
     min-width: 400px;
-    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .6);
+    box-shadow: 0px 10px 20px 15px rgba(0, 0, 0, .9);
 }
 .pdfPreview {
     position: relative;
@@ -71,6 +78,8 @@ button {
     height: 100%;
     overflow-x: hidden;
     justify-content: center;
+    border: 5px;
+    border-color: rgb(36, 36, 36);
     
 }
 body {
@@ -88,15 +97,16 @@ body {
 }
 
 .completo {
-    height: 97vh ;
+    height: 97.5vh ;
     position: relative;
     box-sizing: border-box;
     display: flex;
     margin: 10px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .6);
-    overflow: hidden;
-    
+    box-shadow: 0px 0px 10px 03px rgba(255, 255, 255, 0.5);
+    overflow: auto;
+    border-top: rgb(36, 36, 36) 5px solid;
+    border-bottom: rgb(36, 36, 36) 5px solid;
  
 }
 .fondo {
@@ -112,107 +122,30 @@ body {
     box-sizing: border-box;
     border: blue solid;
 }
-.informacion::-webkit-scrollbar {
-    width: 5px !important;
-}
-.informacion::-webkit-scrollbar-thumb {
-    background-color: #fff !important;
-}    
-.informacion::-webkit-scrollbar-track {
-    background: #ccc !important;
-}
 .pdfPreview::-webkit-scrollbar {
     width: 5px !important;
 }
 .pdfPreview::-webkit-scrollbar-thumb {
-    background-color: #fff !important;
+    background-color: rgb(36, 36, 36) !important;
 }    
 .pdfPreview::-webkit-scrollbar-track {
-    background: #ccc !important;
+    background: rgb(80, 80, 80, 0.75) !important;
 }
-    .input1 {
-        /* Font & Text */
-
-        font-size: 14px;
-        font-style: normal;
-        font-variant: normal;
-        font-weight: 400;
-        letter-spacing: normal;
-        line-height: 20px;
-        text-decoration: none solid rgb(236, 236, 241);
-        text-align: left;
-        text-indent: 0px;
-        text-transform: none;
-        vertical-align: baseline;
-        white-space: normal;
-        word-spacing: 0px;
-    
-        /* Color & Background */
-        background-attachment: scroll;
-        background-color: rgba(0, 0, 0, 0);
-        background-image: none;
-        background-position: 0% 0%;
-        background-repeat: repeat;
-        color: rgb(236, 236, 241);
-    
-        /* Box */
-        height: 36px;
-        width: 100%;
-        border: 0px solid rgb(217, 217, 227);
-        border-top: 0px solid rgb(217, 217, 227);
-        border-right: 0px solid rgb(217, 217, 227);
-        border-bottom: 0px solid rgb(217, 217, 227);
-        border-left: 0px solid rgb(217, 217, 227);
-        margin: 0px;
-        padding: 0px;
-        max-height: none;
-        min-height: 0px;
-        max-width: none;
-        min-width: 0px;
-        box-shadow: 0px 0px 10px 10px rgba(255, 255, 255, .6);
-    
-        /* Positioning */
-        position: relative;
-        top: 0px;
-        bottom: 0px;
-        right: 0px;
-        left: 0px;
-        float: none;
-        display: block;
-        clear: none;
-        z-index: auto;
-    
-        /* List */
-        list-style-image: none;
-        list-style-type: none;
-        list-style-position: outside;
-    
-        /* Table */
-        border-collapse: separate;
-        border-spacing: 0px 0px;
-        caption-side: top;
-        empty-cells: show;
-        table-layout: auto;
-    
-        /* Miscellaneous */
-        overflow: visible;
-        cursor: auto;
-        visibility: visible;
-    
-        /* Effects */
-        transform: none;
-        transition: all 0s ease 0s;
-        outline-offset: 0px;
-        box-sizing: border-box;
-        resize: none;
-        text-shadow: none;
-        text-overflow: clip;
-        word-wrap: normal;
-        box-shadow: none;
-        border-top-left-radius: 0px;
-        border-top-right-radius: 0px;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-    }
-
-
+.miForm::-webkit-scrollbar {
+    width: 5px !important;
+}
+.miForm::-webkit-scrollbar-thumb {
+    background-color: rgb(36, 36, 36) !important;
+}    
+.miForm::-webkit-scrollbar-track {
+    background: rgb(80, 80, 80, 0.75) !important;
+}
+select::-webkit-scrollbar {
+    width: 5px !important;
+}
+select::-webkit-scrollbar-thumb {
+    background-color: rgb(36, 36, 36) !important;
+}    
+select::-webkit-scrollbar-track {
+    background: rgb(80, 80, 80, 0.75) !important;
+}    
