@@ -112,3 +112,9 @@ document.getElementById("Motivo2").addEventListener("keyup", (event)=>{
             content += actualizacion
         document.getElementById("form19_1").value = content
 });
+document.getElementById("NSS").addEventListener("focus", (event)=>{
+    let zooming = 'zoom:4; right: 120px; top: 530px;'
+    const zoomIn = event.target.style;
+            zooming += zoomIn
+        document.getElementById("formviewer").style = zooming
+})

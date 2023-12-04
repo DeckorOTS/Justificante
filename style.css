@@ -2,23 +2,24 @@ html {
     background-color: black;
 }
 .miForm {
-    position: inherit;
+    position: relative;
     display: auto;
     width: 100%;
-    min-width: 400px;
-    max-width: 500px;
     height: 100%;
-    padding: 10px;
-    overflow-x: hidden;
+    overflow-x: visible;
+    overflow-y: scroll;
     background-color: rgb(36, 36, 36, 0.85) ;
     box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, .9);
+    flex: 2;
+    box-sizing: border-box;
     
        
 }    
 .input1 {
-    width: 100%;
+    position: relative;
+    width: 95%;
     padding: 5px ;
-    margin: 5px 0PX 15px 0px;
+    margin: 0px 10px 15px 10px;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -29,26 +30,29 @@ html {
     font-weight: bold;
     color: #ccc;
     background-color: rgb(36, 36, 36);
-    box-shadow: 0px 0px 10px 03px rgba(255, 255, 255, 0.5);    
+    box-shadow: 0px 0px 10px 03px rgba(255, 255, 255, 0.5);
+    flex: 3;        
 }
 .label1 {
-    width: 100%;
+    position: relative;
+    width: auto;
     padding: 5px ;
-    margin: 5px 0PX 0px 0px;
+    margin-left: 10px;
     display: inline-block;
     justify-content: left;
     font-family: Arial, Helvetica, sans-serif; 
     font-size: 16px;
     font-weight: 900;
     color: #ccc;
- 
+    flex: 3;
+    box-sizing: border-box;
 }
 
 button {
     width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
+    padding: 10px;
+    margin: 10px;
+    display: flex;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -59,27 +63,30 @@ button {
 }
 .informacion {
     position: relative;
-    display:flex;
-    flex-wrap: wrap;
+    flex: 1;
     width: 40%;
     height: 100%;
-    overflow: hidden;
+    justify-content: center;
+    align-items: center;
     max-width: 500px;
-    min-width: 400px;
-    box-shadow: 0px 10px 20px 15px rgba(0, 0, 0, .9);
+    min-width: 300px;
+    display: flex;
+    box-sizing: border-box;
 }
 .pdfPreview {
+    display: flex;
     position: relative;
     background: url(IMSSS.jpg);
-    display: flex;
-    flex-wrap: wrap;
+    flex: 1;
     width: 80%;
     min-width: 600px;
     height: 100%;
     overflow-x: hidden;
     justify-content: center;
+    align-items: center;
     border: 5px;
     border-color: rgb(36, 36, 36);
+    min-width: 300px;
     
 }
 body {
@@ -101,6 +108,7 @@ body {
     position: relative;
     box-sizing: border-box;
     display: flex;
+    flex-wrap: wrap;
     margin: 10px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px 03px rgba(255, 255, 255, 0.5);
@@ -149,3 +157,6 @@ select::-webkit-scrollbar-thumb {
 select::-webkit-scrollbar-track {
     background: rgb(80, 80, 80, 0.75) !important;
 }    
+.zoom {
+    transform: scale(2);
+}
